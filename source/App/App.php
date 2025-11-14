@@ -646,8 +646,8 @@ class App extends Controller
     public function signature(?array $data)
     {        
 
-        $head = $this->seo->render(
-            "Meu perfil - " . CONF_SITE_NAME,
+      $head = $this->seo->render(
+            "Assinatura - " . CONF_SITE_NAME,
             CONF_SITE_DESC,
             url(),
             theme("/assets/images/share.jpg"),
@@ -656,17 +656,19 @@ class App extends Controller
 
         echo $this->view->render("signature", [
             "head" => $head,
-            
+            "subscription" => (new AppSubscription())
+            ->find("user_id = :user AND status != :status", "user={$this->user->id}&status=canceled")
+            ->fetch(),
+            "orders" => (new AppOrder())
+            ->find("user_id = :user", "user={$this->user->id}")
+            ->order("created_at DESC")
+            ->fetch(true),
             "plans" => (new AppPlan())
             ->find("status = :status", "status=active")
             ->order("name, price")
             ->fetch(true)
         ]);
-
         
-            /* => 
-             => (new AppOrder())->find()->order("created_at DESC")->fetch(true),*/
-             
     }
 
     /**
